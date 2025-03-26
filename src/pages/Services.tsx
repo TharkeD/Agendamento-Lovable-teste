@@ -93,6 +93,14 @@ const Services = () => {
     }
   };
 
+  // Função para formatar preço em Reais
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -129,7 +137,7 @@ const Services = () => {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="price">Preço</Label>
+                  <Label htmlFor="price">Preço (R$)</Label>
                   <Input
                     type="number"
                     id="price"
@@ -167,6 +175,7 @@ const Services = () => {
                 service={service}
                 onEdit={handleEdit}
                 onDelete={() => handleDelete(service.id)}
+                formatPrice={(price) => formatCurrency(price)}
               />
             ))}
           </div>
@@ -183,7 +192,7 @@ const Services = () => {
                     <TableHead className="w-[200px]">Nome</TableHead>
                     <TableHead>Descrição</TableHead>
                     <TableHead>Duração (min)</TableHead>
-                    <TableHead className="text-right">Preço (R$)</TableHead>
+                    <TableHead className="text-right">Preço</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -192,7 +201,7 @@ const Services = () => {
                       <TableCell className="font-medium">{service.name}</TableCell>
                       <TableCell>{service.description}</TableCell>
                       <TableCell>{service.duration}</TableCell>
-                      <TableCell className="text-right">{service.price}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(service.price)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

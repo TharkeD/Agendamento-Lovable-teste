@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -37,7 +38,7 @@ const Index = () => {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="inline-block px-3 py-1 text-sm font-medium text-primary bg-primary/10 rounded-full"
               >
-                Effortless Scheduling
+                Agendamento Simplificado
               </motion.span>
               
               <motion.h1 
@@ -45,7 +46,7 @@ const Index = () => {
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground"
               >
-                Schedule appointments with ease
+                Agende compromissos com facilidade
               </motion.h1>
               
               <motion.p
@@ -53,7 +54,7 @@ const Index = () => {
                 transition={{ duration: 0.5, delay: 0.5 }}
                 className="text-lg text-muted-foreground"
               >
-                Streamline your booking process and manage your services all in one place. Save time and focus on what matters most - your clients.
+                Otimize seu processo de agendamento e gerencie seus serviços em um só lugar. Economize tempo e concentre-se no que é mais importante - seus clientes.
               </motion.p>
               
               <motion.div
@@ -63,12 +64,12 @@ const Index = () => {
               >
                 <Link to="/book">
                   <Button size="lg" className="rounded-full">
-                    Book Appointment
+                    Agendar Horário
                   </Button>
                 </Link>
                 <Link to="/dashboard">
                   <Button variant="outline" size="lg" className="rounded-full">
-                    View Dashboard
+                    Ver Painel
                   </Button>
                 </Link>
               </motion.div>
@@ -86,8 +87,8 @@ const Index = () => {
                 
                 <div className="relative space-y-4">
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-semibold">Upcoming Appointments</h3>
-                    <span className="text-sm text-muted-foreground">July 2023</span>
+                    <h3 className="text-lg font-semibold">Próximos Agendamentos</h3>
+                    <span className="text-sm text-muted-foreground">Julho 2023</span>
                   </div>
                   
                   {[1, 2, 3].map((_, index) => (
@@ -100,10 +101,10 @@ const Index = () => {
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <h4 className="font-medium">Strategy Session</h4>
-                          <p className="text-sm text-muted-foreground">John Smith</p>
+                          <h4 className="font-medium">Sessão de Estratégia</h4>
+                          <p className="text-sm text-muted-foreground">João Silva</p>
                         </div>
-                        <span className="text-sm text-primary font-medium">9:00 AM</span>
+                        <span className="text-sm text-primary font-medium">9:00</span>
                       </div>
                     </motion.div>
                   ))}
@@ -117,9 +118,9 @@ const Index = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">How It Works</h2>
+            <h2 className="text-3xl font-bold mb-4">Como Funciona</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Our platform makes it easy to manage appointments and services
+              Nossa plataforma facilita o gerenciamento de agendamentos e serviços
             </p>
           </div>
           
@@ -127,18 +128,18 @@ const Index = () => {
             {[
               {
                 icon: <CalendarDays className="w-10 h-10 text-primary" />,
-                title: "Set Your Availability",
-                description: "Define when you're available for appointments"
+                title: "Defina Sua Disponibilidade",
+                description: "Estabeleça quando você está disponível para agendamentos"
               },
               {
                 icon: <Clock className="w-10 h-10 text-primary" />,
-                title: "Manage Services",
-                description: "Create and configure your service offerings"
+                title: "Gerencie Serviços",
+                description: "Crie e configure suas ofertas de serviços"
               },
               {
                 icon: <CheckCircle className="w-10 h-10 text-primary" />,
-                title: "Accept Bookings",
-                description: "Clients can book available time slots"
+                title: "Aceite Reservas",
+                description: "Clientes podem agendar horários disponíveis"
               }
             ].map((feature, index) => (
               <motion.div
@@ -163,9 +164,9 @@ const Index = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-secondary/30">
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Our Services</h2>
+            <h2 className="text-3xl font-bold mb-4">Nossos Serviços</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Browse our service offerings and book an appointment today
+              Explore nossas ofertas de serviços e agende um horário hoje
             </p>
           </div>
           
@@ -183,7 +184,7 @@ const Index = () => {
           <div className="text-center mt-12">
             <Link to="/book">
               <Button size="lg">
-                Book Appointment
+                Agendar Horário
               </Button>
             </Link>
           </div>
@@ -195,26 +196,26 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <Calendar className="h-6 w-6" />
-              <span className="font-semibold">AppointEase</span>
+              <span className="font-semibold">AgendaFácil</span>
             </div>
             
             <div className="flex space-x-6">
               <Link to="/" className="text-secondary-foreground hover:text-foreground transition-colors">
-                Home
+                Início
               </Link>
               <Link to="/dashboard" className="text-secondary-foreground hover:text-foreground transition-colors">
-                Dashboard
+                Painel
               </Link>
               <Link to="/services" className="text-secondary-foreground hover:text-foreground transition-colors">
-                Services
+                Serviços
               </Link>
               <Link to="/book" className="text-secondary-foreground hover:text-foreground transition-colors">
-                Book
+                Agendar
               </Link>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-secondary-foreground/10 text-center text-sm text-secondary-foreground/70">
-            © {new Date().getFullYear()} AppointEase. All rights reserved.
+            © {new Date().getFullYear()} AgendaFácil. Todos os direitos reservados.
           </div>
         </div>
       </footer>

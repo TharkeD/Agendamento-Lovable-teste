@@ -8,6 +8,7 @@ import { AppointmentCard } from "@/components/ui/appointment-card";
 import { useAppointments } from "@/hooks/use-appointments";
 import { useServices } from "@/hooks/use-services";
 import { format, isSameDay } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarIcon, CreditCard, DollarSign, UsersRound } from "lucide-react";
@@ -34,6 +35,14 @@ const Dashboard = () => {
   
   const totalBookings = appointments.filter(app => app.status !== 'cancelled').length;
 
+  // Função para formatar preço em Reais
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -42,9 +51,9 @@ const Dashboard = () => {
         <main className="flex-1 page-container">
           <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+              <h1 className="text-3xl font-bold tracking-tight">Painel</h1>
               <Link to="/book">
-                <Button>Book Appointment</Button>
+                <Button>Agendar Horário</Button>
               </Link>
             </div>
             
@@ -52,14 +61,14 @@ const Dashboard = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Total Revenue
+                    Receita Total
                   </CardTitle>
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">${totalRevenue}</div>
+                  <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
                   <p className="text-xs text-muted-foreground">
-                    From {totalBookings} bookings
+                    De {totalBookings} agendamentos
                   </p>
                 </CardContent>
               </Card>
@@ -67,7 +76,7 @@ const Dashboard = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Appointments
+                    Agendamentos
                   </CardTitle>
                   <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
@@ -76,7 +85,7 @@ const Dashboard = () => {
                     {upcomingAppointments.length}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Upcoming appointments
+                    Próximos agendamentos
                   </p>
                 </CardContent>
               </Card>
@@ -84,14 +93,14 @@ const Dashboard = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Clients
+                    Clientes
                   </CardTitle>
                   <UsersRound className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{totalClients}</div>
                   <p className="text-xs text-muted-foreground">
-                    Total clients served
+                    Total de clientes atendidos
                   </p>
                 </CardContent>
               </Card>
@@ -99,14 +108,14 @@ const Dashboard = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Services
+                    Serviços
                   </CardTitle>
                   <CreditCard className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{services.length}</div>
                   <p className="text-xs text-muted-foreground">
-                    Available services
+                    Serviços disponíveis
                   </p>
                 </CardContent>
               </Card>
@@ -115,16 +124,16 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="lg:col-span-2">
                 <CardHeader>
-                  <CardTitle>Appointments</CardTitle>
+                  <CardTitle>Agendamentos</CardTitle>
                   <CardDescription>
-                    Manage your upcoming appointments
+                    Gerencie seus próximos agendamentos
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Tabs defaultValue="upcoming" className="w-full">
                     <TabsList className="mb-4">
-                      <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-                      <TabsTrigger value="today">Today</TabsTrigger>
+                      <TabsTrigger value="upcoming">Próximos</TabsTrigger>
+                      <TabsTrigger value="today">Hoje</TabsTrigger>
                     </TabsList>
                     <TabsContent value="upcoming" className="space-y-4">
                       {upcomingAppointments.length > 0 ? (
@@ -134,13 +143,14 @@ const Dashboard = () => {
                             appointment={appointment}
                             onCancel={cancelAppointment}
                             onDelete={deleteAppointment}
+                            formatPrice={(price) => formatCurrency(price)}
                           />
                         ))
                       ) : (
                         <div className="text-center py-8">
-                          <p className="text-muted-foreground">No upcoming appointments</p>
+                          <p className="text-muted-foreground">Nenhum agendamento próximo</p>
                           <Link to="/book" className="mt-4 inline-block">
-                            <Button>Book Appointment</Button>
+                            <Button>Agendar Horário</Button>
                           </Link>
                         </div>
                       )}
@@ -153,11 +163,12 @@ const Dashboard = () => {
                             appointment={appointment}
                             onCancel={cancelAppointment}
                             onDelete={deleteAppointment}
+                            formatPrice={(price) => formatCurrency(price)}
                           />
                         ))
                       ) : (
                         <div className="text-center py-8">
-                          <p className="text-muted-foreground">No appointments today</p>
+                          <p className="text-muted-foreground">Nenhum agendamento hoje</p>
                         </div>
                       )}
                     </TabsContent>
@@ -167,9 +178,9 @@ const Dashboard = () => {
               
               <Card>
                 <CardHeader>
-                  <CardTitle>Calendar</CardTitle>
+                  <CardTitle>Calendário</CardTitle>
                   <CardDescription>
-                    View and select dates to see appointments
+                    Visualize e selecione datas para ver agendamentos
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -178,11 +189,12 @@ const Dashboard = () => {
                     selected={selectedDate}
                     onSelect={setSelectedDate}
                     className="rounded-md border mx-auto"
+                    locale={ptBR}
                   />
                   
                   <div className="mt-6">
                     <h3 className="font-medium mb-2">
-                      {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Select a date"}
+                      {selectedDate ? format(selectedDate, "d 'de' MMMM 'de' yyyy", { locale: ptBR }) : "Selecione uma data"}
                     </h3>
                     <div className="space-y-2">
                       {todaysAppointments.length > 0 ? (
@@ -193,12 +205,12 @@ const Dashboard = () => {
                               <p className="text-sm text-muted-foreground">{appointment.client.name}</p>
                             </div>
                             <p className="text-sm">
-                              {format(appointment.date, "h:mm a")}
+                              {format(appointment.date, "HH:mm")}
                             </p>
                           </div>
                         ))
                       ) : (
-                        <p className="text-sm text-muted-foreground">No appointments on this date</p>
+                        <p className="text-sm text-muted-foreground">Nenhum agendamento nesta data</p>
                       )}
                     </div>
                   </div>

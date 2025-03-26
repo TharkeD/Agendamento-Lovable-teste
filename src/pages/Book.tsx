@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ServiceCard } from "@/components/ui/service-card";
@@ -22,15 +23,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar } from "@/components/ui/calendar";
 
 const clientSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
+  name: z.string().min(2, { message: "Nome deve ter pelo menos 2 caracteres" }),
+  email: z.string().email({ message: "Por favor, insira um endereço de e-mail válido" }),
   phone: z.string().optional(),
   notes: z.string().optional(),
 });
 
 type ClientFormValues = z.infer<typeof clientSchema>;
 
-// Steps for the booking process
+// Etapas para o processo de agendamento
 enum BookingStep {
   SelectService,
   SelectDateTime,
@@ -62,7 +63,7 @@ const Book = () => {
   
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
-    // Calculate available dates based on the selected service duration
+    // Calcular datas disponíveis com base na duração do serviço selecionado
     setAvailableDates(getAvailableDates(service.duration));
     setCurrentStep(BookingStep.SelectDateTime);
   };
@@ -70,7 +71,7 @@ const Book = () => {
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(date);
-      setSelectedTime(null); // Reset time when date changes
+      setSelectedTime(null); // Resetar o horário quando a data muda
     }
   };
   
@@ -95,14 +96,14 @@ const Book = () => {
   const onSubmit = (values: ClientFormValues) => {
     if (!selectedService || !selectedDate || !selectedTime) {
       toast({
-        title: "Error",
-        description: "Please complete all required fields",
+        title: "Erro",
+        description: "Por favor, preencha todos os campos obrigatórios",
         variant: "destructive",
       });
       return;
     }
     
-    // Parse the time string to create a proper date object
+    // Converter a string de horário para criar um objeto de data adequado
     const [hours, minutes] = selectedTime.split(':');
     const appointmentDate = new Date(selectedDate);
     appointmentDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
@@ -125,12 +126,20 @@ const Book = () => {
       setCurrentStep(BookingStep.Confirmation);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to book appointment. Please try again.",
+        title: "Erro",
+        description: "Falha ao agendar horário. Por favor, tente novamente.",
         variant: "destructive",
       });
       console.error(error);
     }
+  };
+
+  // Função para formatar preço em Reais
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
   };
   
   const getAvailableTimeSlotsForDate = (date: Date | null): TimeSlot[] => {
@@ -157,9 +166,9 @@ const Book = () => {
             className="space-y-6"
           >
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold">Select a Service</h2>
+              <h2 className="text-2xl font-bold">Selecione um Serviço</h2>
               <p className="text-muted-foreground">
-                Choose the service you'd like to book
+                Escolha o serviço que deseja agendar
               </p>
             </div>
             
@@ -170,6 +179,7 @@ const Book = () => {
                   service={service}
                   mode="select"
                   onClick={handleServiceSelect}
+                  formatPrice={(price) => formatCurrency(price)}
                 />
               ))}
             </div>
@@ -186,16 +196,16 @@ const Book = () => {
             className="space-y-6"
           >
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold">Select Date & Time</h2>
+              <h2 className="text-2xl font-bold">Selecione Data e Horário</h2>
               <p className="text-muted-foreground">
-                Choose a date and time for your {selectedService?.name}
+                Escolha uma data e horário para seu {selectedService?.name}
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Select a Date</CardTitle>
+                  <CardTitle className="text-lg">Selecione uma Data</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Calendar
@@ -203,8 +213,9 @@ const Book = () => {
                     selected={selectedDate || undefined}
                     onSelect={handleDateSelect}
                     className="rounded-md border mx-auto"
+                    locale={ptBR}
                     disabled={(date) => {
-                      // Disable dates that have no available slots
+                      // Desativar datas que não têm horários disponíveis
                       const dateWithSlots = availableDates.find(d => 
                         d.date.getDate() === date.getDate() && 
                         d.date.getMonth() === date.getMonth() && 
@@ -221,11 +232,11 @@ const Book = () => {
               
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Select a Time</CardTitle>
+                  <CardTitle className="text-lg">Selecione um Horário</CardTitle>
                   <CardDescription>
                     {selectedDate 
-                      ? `Available times on ${format(selectedDate, "MMMM d, yyyy")}` 
-                      : "Please select a date first"}
+                      ? `Horários disponíveis em ${format(selectedDate, "d 'de' MMMM 'de' yyyy", { locale: ptBR })}` 
+                      : "Por favor, selecione uma data primeiro"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -245,7 +256,7 @@ const Book = () => {
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
-                      Select a date to see available times
+                      Selecione uma data para ver horários disponíveis
                     </div>
                   )}
                 </CardContent>
@@ -258,14 +269,14 @@ const Book = () => {
                 onClick={handlePrevStep}
               >
                 <ChevronLeft className="mr-2 h-4 w-4" />
-                Back
+                Voltar
               </Button>
               
               <Button
                 onClick={handleNextStep}
                 disabled={!selectedDate || !selectedTime}
               >
-                Continue
+                Continuar
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -282,40 +293,42 @@ const Book = () => {
             className="space-y-6"
           >
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold">Your Information</h2>
+              <h2 className="text-2xl font-bold">Suas Informações</h2>
               <p className="text-muted-foreground">
-                Please enter your details to complete the booking
+                Por favor, insira seus dados para completar o agendamento
               </p>
             </div>
             
             <div className="max-w-md mx-auto">
               <Card>
                 <CardHeader>
-                  <CardTitle>Booking Summary</CardTitle>
-                  <CardDescription>Review your appointment details</CardDescription>
+                  <CardTitle>Resumo do Agendamento</CardTitle>
+                  <CardDescription>Revise os detalhes do seu agendamento</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Service:</span>
+                    <span className="text-muted-foreground">Serviço:</span>
                     <span className="font-medium">{selectedService?.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Date:</span>
+                    <span className="text-muted-foreground">Data:</span>
                     <span className="font-medium">
-                      {selectedDate && format(selectedDate, "MMMM d, yyyy")}
+                      {selectedDate && format(selectedDate, "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Time:</span>
+                    <span className="text-muted-foreground">Horário:</span>
                     <span className="font-medium">{selectedTime}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Duration:</span>
-                    <span className="font-medium">{selectedService?.duration} minutes</span>
+                    <span className="text-muted-foreground">Duração:</span>
+                    <span className="font-medium">{selectedService?.duration} minutos</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Price:</span>
-                    <span className="font-medium">${selectedService?.price}</span>
+                    <span className="text-muted-foreground">Preço:</span>
+                    <span className="font-medium">
+                      {selectedService && formatCurrency(selectedService.price)}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -328,9 +341,9 @@ const Book = () => {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Name</FormLabel>
+                          <FormLabel>Nome</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your full name" {...field} />
+                            <Input placeholder="Seu nome completo" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -342,11 +355,11 @@ const Book = () => {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel>E-mail</FormLabel>
                           <FormControl>
                             <Input 
                               type="email" 
-                              placeholder="Your email address" 
+                              placeholder="Seu endereço de e-mail" 
                               {...field} 
                             />
                           </FormControl>
@@ -360,11 +373,11 @@ const Book = () => {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone (optional)</FormLabel>
+                          <FormLabel>Telefone (opcional)</FormLabel>
                           <FormControl>
                             <Input 
                               type="tel" 
-                              placeholder="Your phone number" 
+                              placeholder="Seu número de telefone" 
                               {...field} 
                             />
                           </FormControl>
@@ -378,10 +391,10 @@ const Book = () => {
                       name="notes"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Notes (optional)</FormLabel>
+                          <FormLabel>Observações (opcional)</FormLabel>
                           <FormControl>
                             <Textarea 
-                              placeholder="Any special requests or information" 
+                              placeholder="Quaisquer solicitações ou informações especiais" 
                               {...field} 
                             />
                           </FormControl>
@@ -397,11 +410,11 @@ const Book = () => {
                         onClick={handlePrevStep}
                       >
                         <ChevronLeft className="mr-2 h-4 w-4" />
-                        Back
+                        Voltar
                       </Button>
                       
                       <Button type="submit">
-                        Complete Booking
+                        Finalizar Agendamento
                       </Button>
                     </div>
                   </form>
@@ -425,42 +438,44 @@ const Book = () => {
               </div>
             </div>
             
-            <h2 className="text-2xl font-bold mb-4">Booking Confirmed!</h2>
+            <h2 className="text-2xl font-bold mb-4">Agendamento Confirmado!</h2>
             <p className="text-muted-foreground mb-6">
-              Your appointment has been scheduled successfully.
+              Seu horário foi agendado com sucesso.
             </p>
             
             <Card>
               <CardHeader>
-                <CardTitle>Appointment Details</CardTitle>
+                <CardTitle>Detalhes do Agendamento</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Service:</span>
+                  <span className="text-muted-foreground">Serviço:</span>
                   <span className="font-medium">{selectedService?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Date:</span>
+                  <span className="text-muted-foreground">Data:</span>
                   <span className="font-medium">
-                    {selectedDate && format(selectedDate, "MMMM d, yyyy")}
+                    {selectedDate && format(selectedDate, "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Time:</span>
+                  <span className="text-muted-foreground">Horário:</span>
                   <span className="font-medium">{selectedTime}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Duration:</span>
-                  <span className="font-medium">{selectedService?.duration} minutes</span>
+                  <span className="text-muted-foreground">Duração:</span>
+                  <span className="font-medium">{selectedService?.duration} minutos</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Price:</span>
-                  <span className="font-medium">${selectedService?.price}</span>
+                  <span className="text-muted-foreground">Preço:</span>
+                  <span className="font-medium">
+                    {selectedService && formatCurrency(selectedService.price)}
+                  </span>
                 </div>
               </CardContent>
               <CardFooter>
                 <Button onClick={() => navigate("/dashboard")} className="w-full">
-                  Go to Dashboard
+                  Ir para o Painel
                 </Button>
               </CardFooter>
             </Card>
@@ -479,14 +494,14 @@ const Book = () => {
       <PageTransition>
         <main className="flex-1 page-container pb-20">
           <div className="max-w-5xl mx-auto">
-            {/* Progress Steps */}
+            {/* Etapas de Progresso */}
             <div className="mb-10">
               <div className="flex justify-between items-center max-w-md mx-auto">
                 {[
-                  { step: BookingStep.SelectService, label: "Service" },
-                  { step: BookingStep.SelectDateTime, label: "Date & Time" },
-                  { step: BookingStep.EnterDetails, label: "Details" },
-                  { step: BookingStep.Confirmation, label: "Confirmation" },
+                  { step: BookingStep.SelectService, label: "Serviço" },
+                  { step: BookingStep.SelectDateTime, label: "Data e Hora" },
+                  { step: BookingStep.EnterDetails, label: "Detalhes" },
+                  { step: BookingStep.Confirmation, label: "Confirmação" },
                 ].map((stepInfo, index) => (
                   <div key={index} className="flex flex-col items-center">
                     <div 

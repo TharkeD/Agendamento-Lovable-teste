@@ -1,4 +1,3 @@
-
 import { Service } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ interface ServiceCardProps {
   onDelete?: (id: string) => void;
   onClick?: (service: Service) => void;
   mode?: "select" | "manage";
+  formatPrice: (price: number) => string;
 }
 
 export function ServiceCard({ 
@@ -18,7 +18,8 @@ export function ServiceCard({
   onEdit, 
   onDelete, 
   onClick,
-  mode = "manage" 
+  mode = "manage",
+  formatPrice
 }: ServiceCardProps) {
   return (
     <motion.div
@@ -38,7 +39,7 @@ export function ServiceCard({
         </CardHeader>
         <CardContent className="pb-4">
           <p className="text-sm text-muted-foreground">{service.description}</p>
-          <p className="mt-3 text-lg font-medium">${service.price}</p>
+          <p className="mt-3 text-lg font-medium">${formatPrice(service.price)}</p>
         </CardContent>
         <CardFooter className="pt-0">
           {mode === "manage" ? (

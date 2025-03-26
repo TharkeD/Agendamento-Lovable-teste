@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { format, isSameMonth } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { AppointmentCard } from "@/components/ui/appointment-card";
@@ -21,7 +22,15 @@ const Appointments = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   
-  // Filter appointments based on search query and status filter
+  // Função para formatar preço em Reais
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+  
+  // Filtrar compromissos com base na consulta de pesquisa e filtro de status
   const filteredAppointments = appointments.filter(appointment => {
     const matchesSearch = 
       appointment.client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -35,12 +44,12 @@ const Appointments = () => {
     return matchesSearch && matchesStatus;
   });
   
-  // Group appointments by status
+  // Agrupar compromissos por status
   const scheduledAppointments = filteredAppointments.filter(app => app.status === 'scheduled');
   const completedAppointments = filteredAppointments.filter(app => app.status === 'completed');
   const cancelledAppointments = filteredAppointments.filter(app => app.status === 'cancelled');
   
-  // Get appointments for the selected date
+  // Obter compromissos para a data selecionada
   const getAppointmentsForDate = (date: Date) => {
     return filteredAppointments.filter(appointment => 
       date.getDate() === appointment.date.getDate() &&
@@ -49,7 +58,7 @@ const Appointments = () => {
     );
   };
   
-  // Get dates with appointments for the calendar
+  // Obter datas com compromissos para o calendário
   const getDatesWithAppointments = () => {
     return appointments.filter(app => 
       selectedDate && isSameMonth(app.date, selectedDate)
@@ -65,13 +74,13 @@ const Appointments = () => {
           <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold tracking-tight">Appointments</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Agendamentos</h1>
                 <p className="text-muted-foreground">
-                  View and manage all your appointments
+                  Visualize e gerencie todos os seus agendamentos
                 </p>
               </div>
               <Link to="/book">
-                <Button>New Appointment</Button>
+                <Button>Novo Agendamento</Button>
               </Link>
             </div>
             
@@ -79,9 +88,9 @@ const Appointments = () => {
               <div>
                 <Card className="h-full">
                   <CardHeader>
-                    <CardTitle>Calendar</CardTitle>
+                    <CardTitle>Calendário</CardTitle>
                     <CardDescription>
-                      Select a date to view appointments
+                      Selecione uma data para ver agendamentos
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -90,12 +99,13 @@ const Appointments = () => {
                       selected={selectedDate}
                       onSelect={setSelectedDate}
                       className="rounded-md border mx-auto"
+                      locale={ptBR}
                     />
                     
                     {selectedDate && (
                       <div className="mt-6">
                         <h3 className="font-medium mb-2">
-                          {format(selectedDate, "MMMM d, yyyy")}
+                          {format(selectedDate, "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
                         </h3>
                         
                         {getAppointmentsForDate(selectedDate).length > 0 ? (
@@ -112,13 +122,13 @@ const Appointments = () => {
                                   </p>
                                 </div>
                                 <p className="text-sm font-medium">
-                                  {format(appointment.date, "h:mm a")}
+                                  {format(appointment.date, "HH:mm")}
                                 </p>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-muted-foreground">No appointments on this date</p>
+                          <p className="text-muted-foreground">Nenhum agendamento nesta data</p>
                         )}
                       </div>
                     )}
@@ -130,13 +140,13 @@ const Appointments = () => {
                 <Card>
                   <CardHeader>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <CardTitle>Appointment List</CardTitle>
+                      <CardTitle>Lista de Agendamentos</CardTitle>
                       <div className="flex items-center gap-2">
                         <div className="relative">
                           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="search"
-                            placeholder="Search appointments..."
+                            placeholder="Buscar agendamentos..."
                             className="pl-8 w-full md:w-auto"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -150,10 +160,10 @@ const Appointments = () => {
                             <SelectValue placeholder="Status" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="all">All Status</SelectItem>
-                            <SelectItem value="scheduled">Scheduled</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                            <SelectItem value="all">Todos</SelectItem>
+                            <SelectItem value="scheduled">Agendados</SelectItem>
+                            <SelectItem value="completed">Concluídos</SelectItem>
+                            <SelectItem value="cancelled">Cancelados</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -164,19 +174,19 @@ const Appointments = () => {
                       <TabsList className="mb-4">
                         <TabsTrigger value="all" className="flex items-center">
                           <LinkIcon className="mr-2 h-4 w-4" />
-                          All ({filteredAppointments.length})
+                          Todos ({filteredAppointments.length})
                         </TabsTrigger>
                         <TabsTrigger value="scheduled" className="flex items-center">
                           <Clock className="mr-2 h-4 w-4" />
-                          Scheduled ({scheduledAppointments.length})
+                          Agendados ({scheduledAppointments.length})
                         </TabsTrigger>
                         <TabsTrigger value="completed" className="flex items-center">
                           <CheckCheck className="mr-2 h-4 w-4" />
-                          Completed ({completedAppointments.length})
+                          Concluídos ({completedAppointments.length})
                         </TabsTrigger>
                         <TabsTrigger value="cancelled" className="flex items-center">
                           <X className="mr-2 h-4 w-4" />
-                          Cancelled ({cancelledAppointments.length})
+                          Cancelados ({cancelledAppointments.length})
                         </TabsTrigger>
                       </TabsList>
                       
@@ -192,13 +202,14 @@ const Appointments = () => {
                                   : undefined
                               }
                               onDelete={deleteAppointment}
+                              formatPrice={(price) => formatCurrency(price)}
                             />
                           ))
                         ) : (
                           <div className="text-center py-10">
-                            <p className="text-muted-foreground">No appointments found</p>
+                            <p className="text-muted-foreground">Nenhum agendamento encontrado</p>
                             <Link to="/book" className="mt-4 inline-block">
-                              <Button>Create Appointment</Button>
+                              <Button>Criar Agendamento</Button>
                             </Link>
                           </div>
                         )}
@@ -212,13 +223,14 @@ const Appointments = () => {
                               appointment={appointment}
                               onCancel={cancelAppointment}
                               onDelete={deleteAppointment}
+                              formatPrice={(price) => formatCurrency(price)}
                             />
                           ))
                         ) : (
                           <div className="text-center py-10">
-                            <p className="text-muted-foreground">No scheduled appointments</p>
+                            <p className="text-muted-foreground">Nenhum agendamento programado</p>
                             <Link to="/book" className="mt-4 inline-block">
-                              <Button>Create Appointment</Button>
+                              <Button>Criar Agendamento</Button>
                             </Link>
                           </div>
                         )}
@@ -231,11 +243,12 @@ const Appointments = () => {
                               key={appointment.id}
                               appointment={appointment}
                               onDelete={deleteAppointment}
+                              formatPrice={(price) => formatCurrency(price)}
                             />
                           ))
                         ) : (
                           <div className="text-center py-10">
-                            <p className="text-muted-foreground">No completed appointments</p>
+                            <p className="text-muted-foreground">Nenhum agendamento concluído</p>
                           </div>
                         )}
                       </TabsContent>
@@ -247,11 +260,12 @@ const Appointments = () => {
                               key={appointment.id}
                               appointment={appointment}
                               onDelete={deleteAppointment}
+                              formatPrice={(price) => formatCurrency(price)}
                             />
                           ))
                         ) : (
                           <div className="text-center py-10">
-                            <p className="text-muted-foreground">No cancelled appointments</p>
+                            <p className="text-muted-foreground">Nenhum agendamento cancelado</p>
                           </div>
                         )}
                       </TabsContent>
