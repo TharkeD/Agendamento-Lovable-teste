@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
@@ -13,6 +12,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarIcon, CreditCard, DollarSign, UsersRound } from "lucide-react";
 import { Link } from "react-router-dom";
+import { formatUtils } from "@/lib/utils";
 
 const Dashboard = () => {
   const { appointments, cancelAppointment, deleteAppointment, getAppointmentsForDate } = useAppointments();
@@ -35,7 +35,6 @@ const Dashboard = () => {
   
   const totalBookings = appointments.filter(app => app.status !== 'cancelled').length;
 
-  // Função para formatar preço em Reais
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -143,7 +142,6 @@ const Dashboard = () => {
                             appointment={appointment}
                             onCancel={cancelAppointment}
                             onDelete={deleteAppointment}
-                            formatPrice={(price) => formatCurrency(price)}
                           />
                         ))
                       ) : (
@@ -163,7 +161,6 @@ const Dashboard = () => {
                             appointment={appointment}
                             onCancel={cancelAppointment}
                             onDelete={deleteAppointment}
-                            formatPrice={(price) => formatCurrency(price)}
                           />
                         ))
                       ) : (

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { format, isSameMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -202,7 +201,6 @@ const Appointments = () => {
                                   : undefined
                               }
                               onDelete={deleteAppointment}
-                              formatPrice={(price) => formatCurrency(price)}
                             />
                           ))
                         ) : (
@@ -223,7 +221,6 @@ const Appointments = () => {
                               appointment={appointment}
                               onCancel={cancelAppointment}
                               onDelete={deleteAppointment}
-                              formatPrice={(price) => formatCurrency(price)}
                             />
                           ))
                         ) : (
@@ -243,7 +240,6 @@ const Appointments = () => {
                               key={appointment.id}
                               appointment={appointment}
                               onDelete={deleteAppointment}
-                              formatPrice={(price) => formatCurrency(price)}
                             />
                           ))
                         ) : (
@@ -260,7 +256,6 @@ const Appointments = () => {
                               key={appointment.id}
                               appointment={appointment}
                               onDelete={deleteAppointment}
-                              formatPrice={(price) => formatCurrency(price)}
                             />
                           ))
                         ) : (

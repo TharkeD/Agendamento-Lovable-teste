@@ -6,6 +6,7 @@ import { useServices } from "@/hooks/use-services";
 import { ServiceCard } from "@/components/ui/service-card";
 import { Navbar } from "@/components/layout/Navbar";
 import { CalendarDays, Clock, CheckCircle, Calendar } from "lucide-react";
+import { formatUtils } from "@/lib/utils";
 
 const Index = () => {
   const { services } = useServices();
@@ -177,6 +178,7 @@ const Index = () => {
                 service={service} 
                 mode="select"
                 onClick={() => {}}
+                formatPrice={formatUtils.formatCurrency}
               />
             ))}
           </div>

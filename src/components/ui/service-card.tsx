@@ -1,8 +1,10 @@
+
 import { Service } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, Pencil, Trash } from "lucide-react";
 import { motion } from "framer-motion";
+import { formatUtils } from "@/lib/utils";
 
 interface ServiceCardProps {
   service: Service;
@@ -10,7 +12,7 @@ interface ServiceCardProps {
   onDelete?: (id: string) => void;
   onClick?: (service: Service) => void;
   mode?: "select" | "manage";
-  formatPrice: (price: number) => string;
+  formatPrice?: (price: number) => string;
 }
 
 export function ServiceCard({ 
@@ -21,6 +23,16 @@ export function ServiceCard({
   mode = "manage",
   formatPrice
 }: ServiceCardProps) {
+  // Função interna para formatar o preço, caso o formatPrice não seja fornecido
+  const formatPriceDisplay = (price: number) => {
+    if (formatPrice) {
+      return formatPrice(price);
+    }
+    
+    // Função padrão para formatar como BRL
+    return formatUtils.formatCurrency(price);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,12 +46,12 @@ export function ServiceCard({
           <CardTitle className="text-xl">{service.name}</CardTitle>
           <CardDescription className="flex items-center text-sm text-muted-foreground">
             <Clock className="h-3.5 w-3.5 mr-1 text-muted-foreground/70" />
-            {service.duration} minutes
+            {service.duration} minutos
           </CardDescription>
         </CardHeader>
         <CardContent className="pb-4">
           <p className="text-sm text-muted-foreground">{service.description}</p>
-          <p className="mt-3 text-lg font-medium">${formatPrice(service.price)}</p>
+          <p className="mt-3 text-lg font-medium">{formatPriceDisplay(service.price)}</p>
         </CardContent>
         <CardFooter className="pt-0">
           {mode === "manage" ? (
@@ -51,7 +63,7 @@ export function ServiceCard({
                   onClick={() => onEdit(service)}
                 >
                   <Pencil className="h-4 w-4 mr-1" />
-                  Edit
+                  Editar
                 </Button>
               )}
               {onDelete && (
@@ -62,7 +74,7 @@ export function ServiceCard({
                   className="text-destructive hover:text-destructive"
                 >
                   <Trash className="h-4 w-4 mr-1" />
-                  Delete
+                  Excluir
                 </Button>
               )}
             </div>
@@ -72,7 +84,7 @@ export function ServiceCard({
               className="w-full"
               onClick={() => onClick && onClick(service)}
             >
-              Select
+              Selecionar
             </Button>
           )}
         </CardFooter>
