@@ -16,7 +16,7 @@ export function Navbar() {
         <div className="mr-4 flex">
           <Link to="/" className="flex items-center space-x-2">
             <Calendar className="h-6 w-6 text-primary" />
-            <span className="font-semibold tracking-tight">AppointEase</span>
+            <span className="font-semibold tracking-tight">AgendaFácil</span>
           </Link>
         </div>
         <nav className="flex flex-1 items-center justify-center space-x-1 md:justify-end">
@@ -28,7 +28,7 @@ export function Navbar() {
             )}
           >
             <Home className="mr-2 h-4 w-4" />
-            Home
+            Início
           </Link>
           <Link 
             to="/dashboard"
@@ -38,7 +38,7 @@ export function Navbar() {
             )}
           >
             <LayoutDashboard className="mr-2 h-4 w-4" />
-            Dashboard
+            Painel
           </Link>
           <Link 
             to="/services"
@@ -48,7 +48,7 @@ export function Navbar() {
             )}
           >
             <Settings className="mr-2 h-4 w-4" />
-            Services
+            Serviços
           </Link>
           <Link 
             to="/book"
@@ -56,7 +56,7 @@ export function Navbar() {
               "inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
             )}
           >
-            Book Appointment
+            Agendar
           </Link>
         </nav>
       </div>
