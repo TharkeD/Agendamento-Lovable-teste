@@ -1,11 +1,11 @@
-
 import { useState, useEffect } from 'react';
 import { Appointment, DateWithSlots, TimeSlot } from '@/lib/types';
 import { toast } from "sonner";
 import { addDays, format, isSameDay, isWithinInterval, set } from 'date-fns';
+import { NotificationService } from '@/lib/notification-service';
 
 export function useAppointments() {
-  // In a real app, this would be fetched from an API
+  // Em um app real, isso seria obtido de uma API
   const [appointments, setAppointments] = useState<Appointment[]>(() => {
     const savedAppointments = localStorage.getItem('appointments');
     return savedAppointments 
@@ -20,34 +20,78 @@ export function useAppointments() {
     localStorage.setItem('appointments', JSON.stringify(appointments));
   }, [appointments]);
 
-  const addAppointment = (appointment: Omit<Appointment, 'id' | 'status'>) => {
+  const addAppointment = async (appointment: Omit<Appointment, 'id' | 'status'>) => {
     const newAppointment: Appointment = {
       ...appointment,
       id: generateId(),
       status: 'scheduled',
     };
     setAppointments([...appointments, newAppointment]);
-    toast.success("Appointment scheduled successfully");
+    
+    // Enviar notificação de confirmação
+    await NotificationService.sendAppointmentConfirmation(newAppointment);
+    
+    toast.success("Agendamento realizado com sucesso");
     return newAppointment;
   };
 
-  const updateAppointment = (updatedAppointment: Appointment) => {
+  const updateAppointment = async (updatedAppointment: Appointment) => {
     setAppointments(appointments.map(appointment => 
       appointment.id === updatedAppointment.id ? updatedAppointment : appointment
     ));
-    toast.success("Appointment updated successfully");
+    
+    // Enviar notificação de atualização
+    await NotificationService.sendAppointmentConfirmation(updatedAppointment);
+    
+    toast.success("Agendamento atualizado com sucesso");
   };
 
-  const cancelAppointment = (id: string) => {
-    setAppointments(appointments.map(appointment => 
-      appointment.id === id ? { ...appointment, status: 'cancelled' as const } : appointment
+  const cancelAppointment = async (id: string) => {
+    const appointment = appointments.find(app => app.id === id);
+    
+    if (!appointment) {
+      toast.error("Agendamento não encontrado");
+      return;
+    }
+    
+    const updatedAppointment = { ...appointment, status: 'cancelled' as const };
+    
+    setAppointments(appointments.map(app => 
+      app.id === id ? updatedAppointment : app
     ));
-    toast.success("Appointment cancelled");
+    
+    // Enviar notificação de cancelamento
+    await NotificationService.sendAppointmentCancellation(updatedAppointment);
+    
+    toast.success("Agendamento cancelado");
   };
 
-  const deleteAppointment = (id: string) => {
-    setAppointments(appointments.filter(appointment => appointment.id !== id));
-    toast.success("Appointment deleted");
+  const deleteAppointment = async (id: string) => {
+    const appointment = appointments.find(app => app.id === id);
+    
+    if (!appointment) {
+      toast.error("Agendamento não encontrado");
+      return;
+    }
+    
+    setAppointments(appointments.filter(app => app.id !== id));
+    
+    // Enviar notificação de cancelamento/exclusão
+    await NotificationService.sendAppointmentCancellation(appointment);
+    
+    toast.success("Agendamento excluído");
+  };
+
+  const sendReminder = async (id: string) => {
+    const appointment = appointments.find(app => app.id === id);
+    
+    if (!appointment) {
+      toast.error("Agendamento não encontrado");
+      return false;
+    }
+    
+    // Enviar lembrete
+    return NotificationService.sendAppointmentReminder(appointment);
   };
 
   const getAppointment = (id: string) => {
@@ -118,6 +162,7 @@ export function useAppointments() {
     updateAppointment, 
     cancelAppointment,
     deleteAppointment, 
+    sendReminder,
     getAppointment,
     getAppointmentsForDate,
     getAvailableTimeSlots,
