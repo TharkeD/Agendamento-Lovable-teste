@@ -1,11 +1,10 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useServices } from "@/hooks/use-services";
 import { ServiceCard } from "@/components/ui/service-card";
 import { Navbar } from "@/components/layout/Navbar";
-import { CalendarDays, Clock, CheckCircle } from "lucide-react";
+import { CalendarDays, Clock, CheckCircle, Calendar } from "lucide-react";
 
 const Index = () => {
   const { services } = useServices();
