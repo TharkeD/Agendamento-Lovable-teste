@@ -5,28 +5,36 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { Navbar } from "@/components/layout/Navbar";
 
-const Login = () => {
+const Register = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [error, setError] = useState("");
   
-  const from = location.state?.from?.pathname || "/dashboard";
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    
+    if (password !== confirmPassword) {
+      setError("As senhas não coincidem");
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
-      const success = await login(email, password);
+      const success = await register(name, email, password);
       if (success) {
-        navigate(from, { replace: true });
+        navigate("/appointments");
       }
     } finally {
       setIsLoading(false);
@@ -40,19 +48,29 @@ const Login = () => {
         <div className="container mx-auto px-4 py-8 flex flex-1 items-center justify-center">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Login</CardTitle>
+              <CardTitle className="text-2xl">Criar Conta</CardTitle>
               <CardDescription>
-                Entre com suas credenciais para gerenciar agendamentos e serviços
+                Crie uma conta para poder agendar seus serviços
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
+                  <Label htmlFor="name">Nome Completo</Label>
+                  <Input
+                    id="name"
+                    placeholder="Seu nome completo"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="admin@exemplo.com"
+                    placeholder="seu.email@exemplo.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -69,24 +87,34 @@ const Login = () => {
                     required
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirme a Senha</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </div>
+
+                {error && (
+                  <div className="text-red-500 text-sm">{error}</div>
+                )}
 
                 <div className="pt-2">
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Entrando..." : "Entrar"}
+                    {isLoading ? "Criando..." : "Criar Conta"}
                   </Button>
                 </div>
               </form>
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              <div className="text-sm text-center text-muted-foreground">
-                <p>Para demonstração, use:</p>
-                <p>Email: admin@exemplo.com</p>
-                <p>Senha: senha123</p>
-              </div>
-              <div className="text-sm text-center">
-                Não tem uma conta?{" "}
-                <Link to="/register" className="text-blue-600 hover:underline">
-                  Cadastre-se
+            <CardFooter className="flex justify-center">
+              <div className="text-sm text-muted-foreground">
+                Já tem uma conta?{" "}
+                <Link to="/login" className="text-blue-600 hover:underline">
+                  Faça login
                 </Link>
               </div>
             </CardFooter>
@@ -97,4 +125,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

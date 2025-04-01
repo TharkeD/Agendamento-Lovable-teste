@@ -16,6 +16,8 @@ export function Navbar() {
     { label: "Início", href: "/" },
     ...(isAdmin ? [{ label: "Painel", href: "/dashboard" }] : []),
     ...(isAdmin ? [{ label: "Serviços", href: "/services" }] : []),
+    ...(isAdmin ? [{ label: "Administradores", href: "/admin-management" }] : []),
+    ...(isAdmin ? [{ label: "Notificações", href: "/notification-settings" }] : []),
     { label: "Agendar", href: "/book" },
     ...(isAuthenticated ? [{ label: "Meus Agendamentos", href: "/appointments" }] : []),
   ];
@@ -61,9 +63,14 @@ export function Navbar() {
               </Button>
             </div>
           ) : (
-            <Link to="/login">
-              <Button variant="outline">Login</Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/login">
+                <Button variant="outline">Login</Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="outline">Cadastrar</Button>
+              </Link>
+            </div>
           )}
           <Link to="/book">
             <Button>Agendar Horário</Button>
@@ -101,11 +108,18 @@ export function Navbar() {
                   </Button>
                 </>
               ) : (
-                <Link to="/login" onClick={() => setOpen(false)}>
-                  <Button variant="outline" className="w-full">
-                    Login
-                  </Button>
-                </Link>
+                <>
+                  <Link to="/login" onClick={() => setOpen(false)}>
+                    <Button variant="outline" className="w-full">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/register" onClick={() => setOpen(false)}>
+                    <Button variant="outline" className="w-full">
+                      Cadastrar
+                    </Button>
+                  </Link>
+                </>
               )}
               <Link to="/book" onClick={() => setOpen(false)}>
                 <Button className="w-full">Agendar Horário</Button>

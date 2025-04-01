@@ -14,6 +14,9 @@ import Book from "./pages/Book";
 import Appointments from "./pages/Appointments";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import AdminManagement from "./pages/AdminManagement";
+import NotificationSettings from "./pages/NotificationSettings";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route 
               path="/dashboard" 
               element={
@@ -40,6 +44,22 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin={true}>
                   <Services />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin-management" 
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/notification-settings" 
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <NotificationSettings />
                 </ProtectedRoute>
               } 
             />

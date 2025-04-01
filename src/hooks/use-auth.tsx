@@ -1,34 +1,25 @@
 
 import { useState, useEffect, createContext, useContext } from 'react';
 import { toast } from "sonner";
+import { User, UserService } from '@/lib/user-service';
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'client';
-};
+// Omitimos o campo password para não expor no contexto da aplicação
+type AuthUser = Omit<User, 'password'>;
 
 type AuthContextType = {
-  user: User | null;
+  user: AuthUser | null;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
+  register: (name: string, email: string, password: string) => Promise<boolean>;
+  createAdmin: (name: string, email: string, password: string) => Promise<boolean>;
   isAuthenticated: boolean;
   isAdmin: boolean;
-};
-
-// Usuário admin padrão para demonstração
-const defaultAdmin = {
-  id: 'admin-1',
-  name: 'Administrador',
-  email: 'admin@exemplo.com',
-  role: 'admin' as const,
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
+  const [user, setUser] = useState<AuthUser | null>(() => {
     const savedUser = localStorage.getItem('auth_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
@@ -45,14 +36,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Para esta demonstração, aceitamos apenas um usuário fixo
-    // Em um sistema real, isso seria validado em um backend
-    if (email === 'admin@exemplo.com' && password === 'senha123') {
-      setUser(defaultAdmin);
-      toast.success("Login realizado com sucesso!");
-      return true;
-    } else {
-      toast.error("Email ou senha incorretos!");
+    try {
+      const validatedUser = UserService.validateCredentials(email, password);
+      
+      if (validatedUser) {
+        // Omitir a senha antes de armazenar no estado
+        const { password: _, ...safeUser } = validatedUser;
+        setUser(safeUser);
+        toast.success("Login realizado com sucesso!");
+        return true;
+      } else {
+        toast.error("Email ou senha incorretos!");
+        return false;
+      }
+    } catch (error) {
+      toast.error("Erro ao fazer login");
+      console.error(error);
       return false;
     }
   };
@@ -62,8 +61,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     toast.info("Você saiu da sua conta");
   };
 
+  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+    try {
+      const newUser = UserService.createClient(name, email, password);
+      // Omitir a senha antes de armazenar no estado
+      const { password: _, ...safeUser } = newUser;
+      setUser(safeUser);
+      toast.success("Conta criada com sucesso!");
+      return true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao criar conta";
+      toast.error(message);
+      console.error(error);
+      return false;
+    }
+  };
+
+  const createAdmin = async (name: string, email: string, password: string): Promise<boolean> => {
+    if (!isAdmin) {
+      toast.error("Você não tem permissão para criar administradores");
+      return false;
+    }
+
+    try {
+      UserService.createAdmin(name, email, password);
+      toast.success("Administrador criado com sucesso!");
+      return true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao criar administrador";
+      toast.error(message);
+      console.error(error);
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      logout, 
+      register,
+      createAdmin,
+      isAuthenticated, 
+      isAdmin 
+    }}>
       {children}
     </AuthContext.Provider>
   );
@@ -78,4 +119,3 @@ export function useAuth() {
   
   return context;
 }
-
