@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -16,10 +15,16 @@ export function Navbar() {
     { label: "Início", href: "/" },
     ...(isAdmin ? [{ label: "Painel", href: "/dashboard" }] : []),
     ...(isAdmin ? [{ label: "Serviços", href: "/services" }] : []),
+    ...(isAdmin ? [{ label: "Agendamentos", href: "/appointments" }] : []),
     ...(isAdmin ? [{ label: "Administradores", href: "/admin-management" }] : []),
     ...(isAdmin ? [{ label: "Notificações", href: "/notification-settings" }] : []),
+    ...(isAdmin ? [{ label: "Horários", href: "/business-hours" }] : []),
     { label: "Agendar", href: "/book" },
-    ...(isAuthenticated ? [{ label: "Meus Agendamentos", href: "/appointments" }] : []),
+    ...(!isAdmin && isAuthenticated ? [
+      { label: "Meus Agendamentos", href: "/my-appointments" },
+      { label: "Notificações", href: "/notification-preferences" },
+      { label: "Meu Perfil", href: "/profile" }
+    ] : []),
   ];
 
   return (

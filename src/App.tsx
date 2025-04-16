@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,11 +11,15 @@ import Dashboard from "./pages/Dashboard";
 import Services from "./pages/Services";
 import Book from "./pages/Book";
 import Appointments from "./pages/Appointments";
+import ClientAppointments from "./pages/ClientAppointments";
+import NotificationPreferences from "./pages/NotificationPreferences";
+import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminManagement from "./pages/AdminManagement";
 import NotificationSettings from "./pages/NotificationSettings";
+import BusinessHours from "./pages/BusinessHours";
 
 const queryClient = new QueryClient();
 
@@ -63,12 +66,44 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/business-hours" 
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <BusinessHours />
+                </ProtectedRoute>
+              } 
+            />
             <Route path="/book" element={<Book />} />
             <Route 
               path="/appointments" 
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAdmin={true}>
                   <Appointments />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/my-appointments" 
+              element={
+                <ProtectedRoute>
+                  <ClientAppointments />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/notification-preferences" 
+              element={
+                <ProtectedRoute>
+                  <NotificationPreferences />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
                 </ProtectedRoute>
               } 
             />

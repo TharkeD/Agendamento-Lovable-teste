@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Appointment, DateWithSlots, TimeSlot } from '@/lib/types';
 import { toast } from "sonner";
-import { addDays, format, isSameDay, isWithinInterval, set } from 'date-fns';
+import { addDays, format, isSameDay, isWithinInterval, set, parse } from 'date-fns';
 import { NotificationService } from '@/lib/notification-service';
+import { useBusinessHours } from './use-business-hours';
 
 export function useAppointments() {
+  const { isDateAvailable, getHoursForDate } = useBusinessHours();
+  
   // Em um app real, isso seria obtido de uma API
   const [appointments, setAppointments] = useState<Appointment[]>(() => {
     const savedAppointments = localStorage.getItem('appointments');
@@ -107,36 +110,81 @@ export function useAppointments() {
 
   // Generate available time slots for a given date and service duration
   const getAvailableTimeSlots = (date: Date, duration: number): TimeSlot[] => {
-    // Business hours from 9 AM to 5 PM
-    const startHour = 9;
-    const endHour = 17;
     const slots: TimeSlot[] = [];
     
+    // Verificar se a data está disponível de acordo com os horários de funcionamento
+    if (!isDateAvailable(date)) {
+      return slots; // Retorna array vazio se a data não estiver disponível
+    }
+    
+    // Obter horários de funcionamento para a data
+    const businessHours = getHoursForDate(date);
+    if (!businessHours) {
+      return slots; // Retorna array vazio se não houver horários definidos
+    }
+    
+    // Converter horários de string para objetos Date
+    const openTime = parse(businessHours.openTime, 'HH:mm', date);
+    const closeTime = parse(businessHours.closeTime, 'HH:mm', date);
+    
+    // Definir horário de almoço, se existir
+    let lunchStart: Date | null = null;
+    let lunchEnd: Date | null = null;
+    if (businessHours.lunchStart && businessHours.lunchEnd) {
+      lunchStart = parse(businessHours.lunchStart, 'HH:mm', date);
+      lunchEnd = parse(businessHours.lunchEnd, 'HH:mm', date);
+    }
+    
+    // Obter agendamentos existentes para a data
     const appointmentsOnDate = appointments.filter(
       app => isSameDay(app.date, date) && app.status !== 'cancelled'
     );
     
-    // Generate slots in 30-minute increments
-    for (let hour = startHour; hour < endHour; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
-        const slotTime = set(date, { hours: hour, minutes: minute, seconds: 0, milliseconds: 0 });
-        const slotEndTime = new Date(slotTime.getTime() + duration * 60000);
-        
-        // Check if slot overlaps with any existing appointment
-        const isOverlapping = appointmentsOnDate.some(app => {
-          const appEndTime = new Date(app.date.getTime() + app.service.duration * 60000);
-          return (
-            isWithinInterval(slotTime, { start: app.date, end: appEndTime }) ||
-            isWithinInterval(slotEndTime, { start: app.date, end: appEndTime }) ||
-            (slotTime <= app.date && slotEndTime >= appEndTime)
-          );
-        });
-        
-        slots.push({
-          time: format(slotTime, 'h:mm a'),
-          available: !isOverlapping
-        });
+    // Gerar slots em incrementos de 30 minutos
+    const startHour = openTime.getHours();
+    const startMinute = openTime.getMinutes();
+    const endHour = closeTime.getHours();
+    const endMinute = closeTime.getMinutes();
+    
+    // Calcular o total de minutos para o loop
+    const startTotalMinutes = startHour * 60 + startMinute;
+    const endTotalMinutes = endHour * 60 + endMinute;
+    
+    // Gerar slots em incrementos de 30 minutos
+    for (let minutes = startTotalMinutes; minutes < endTotalMinutes; minutes += 30) {
+      const hour = Math.floor(minutes / 60);
+      const minute = minutes % 60;
+      
+      const slotTime = set(date, { hours: hour, minutes: minute, seconds: 0, milliseconds: 0 });
+      const slotEndTime = new Date(slotTime.getTime() + duration * 60000);
+      
+      // Verificar se o slot está dentro do horário de almoço
+      let isDuringLunch = false;
+      if (lunchStart && lunchEnd) {
+        isDuringLunch = (
+          (slotTime >= lunchStart && slotTime < lunchEnd) ||
+          (slotEndTime > lunchStart && slotEndTime <= lunchEnd) ||
+          (slotTime <= lunchStart && slotEndTime >= lunchEnd)
+        );
       }
+      
+      // Verificar se o slot termina antes do fechamento
+      const endsBeforeClose = slotEndTime <= closeTime;
+      
+      // Verificar se o slot se sobrepõe a algum agendamento existente
+      const isOverlapping = appointmentsOnDate.some(app => {
+        const appEndTime = new Date(app.date.getTime() + app.service.duration * 60000);
+        return (
+          isWithinInterval(slotTime, { start: app.date, end: appEndTime }) ||
+          isWithinInterval(slotEndTime, { start: app.date, end: appEndTime }) ||
+          (slotTime <= app.date && slotEndTime >= appEndTime)
+        );
+      });
+      
+      slots.push({
+        time: format(slotTime, 'HH:mm'),
+        available: !isOverlapping && !isDuringLunch && endsBeforeClose
+      });
     }
     
     return slots;
@@ -149,8 +197,11 @@ export function useAppointments() {
     
     for (let i = 0; i < 14; i++) {
       const date = addDays(today, i);
-      const slots = getAvailableTimeSlots(date, serviceDuration);
-      dates.push({ date, slots });
+      // Só adiciona a data se estiver disponível de acordo com os horários de funcionamento
+      if (isDateAvailable(date)) {
+        const slots = getAvailableTimeSlots(date, serviceDuration);
+        dates.push({ date, slots });
+      }
     }
     
     return dates;

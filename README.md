@@ -1,69 +1,160 @@
-# Welcome to your Lovable project
+# Sistema de Agendamento - Documentação
 
-## Project info
+## Visão Geral
 
-**URL**: https://lovable.dev/projects/2a198786-c0eb-4bbc-822d-cf87a475fea3
+Este sistema de agendamento foi desenvolvido para permitir que empresas gerenciem seus serviços e agendamentos de forma eficiente. O sistema possui dois tipos de usuários:
 
-## How can I edit this code?
+1. **Administradores**: Podem gerenciar serviços, visualizar e gerenciar todos os agendamentos, configurar horários de funcionamento, gerenciar outros administradores e configurar notificações.
 
-There are several ways of editing your application.
+2. **Clientes**: Podem visualizar serviços disponíveis, agendar horários, gerenciar seus próprios agendamentos e configurar suas preferências de notificação.
 
-**Use Lovable**
+## Tecnologias Utilizadas
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2a198786-c0eb-4bbc-822d-cf87a475fea3) and start prompting.
+- **Frontend**: React, TypeScript, TailwindCSS, Shadcn UI
+- **Gerenciamento de Estado**: React Context API, React Query
+- **Roteamento**: React Router
+- **Formulários**: React Hook Form, Zod
+- **Animações**: Framer Motion
+- **Testes**: Vitest, React Testing Library
 
-Changes made via Lovable will be committed automatically to this repo.
+## Estrutura do Projeto
 
-**Use your preferred IDE**
+```
+src/
+├── components/         # Componentes reutilizáveis
+│   ├── layout/         # Componentes de layout (Navbar, ProtectedRoute, etc.)
+│   └── ui/             # Componentes de UI (botões, cards, etc.)
+├── hooks/              # Hooks personalizados para gerenciamento de estado
+├── lib/                # Utilitários e serviços
+├── pages/              # Páginas da aplicação
+└── App.tsx             # Componente principal com rotas
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Funcionalidades Principais
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Funcionalidades de Administrador
 
-Follow these steps:
+1. **Gerenciamento de Serviços**
+   - Criar, editar e excluir serviços
+   - Definir preço, duração e descrição dos serviços
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. **Gerenciamento de Agendamentos**
+   - Visualizar todos os agendamentos
+   - Filtrar agendamentos por data, cliente ou status
+   - Cancelar ou excluir agendamentos
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3. **Gerenciamento de Disponibilidade**
+   - Configurar horários de funcionamento para cada dia da semana
+   - Definir intervalos de almoço
+   - Adicionar datas especiais (feriados, fechamentos, horários estendidos)
 
-# Step 3: Install the necessary dependencies.
-npm i
+4. **Gerenciamento de Administradores**
+   - Adicionar novos administradores
+   - Remover administradores existentes
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+5. **Configuração de Notificações**
+   - Configurar notificações por email e WhatsApp
+   - Definir mensagens automáticas para confirmação e lembrete de agendamentos
+
+6. **Dashboard**
+   - Visualizar métricas e estatísticas de agendamentos
+   - Acompanhar desempenho dos serviços
+
+### Funcionalidades de Cliente
+
+1. **Visualização de Serviços**
+   - Visualizar lista de serviços disponíveis
+   - Ver detalhes de cada serviço (preço, duração, descrição)
+
+2. **Agendamento de Horários**
+   - Selecionar serviço desejado
+   - Escolher data e horário disponíveis
+   - Fornecer informações de contato
+   - Receber confirmação do agendamento
+
+3. **Gerenciamento de Agendamentos**
+   - Visualizar agendamentos futuros e passados
+   - Cancelar agendamentos
+   - Ver detalhes dos agendamentos
+
+4. **Preferências de Notificação**
+   - Configurar como deseja receber notificações (email, WhatsApp)
+   - Definir quando deseja receber lembretes
+
+5. **Perfil de Usuário**
+   - Atualizar informações pessoais
+   - Alterar senha
+
+## Autenticação e Autorização
+
+O sistema implementa um mecanismo de autenticação e autorização que:
+
+1. Permite registro e login de usuários
+2. Protege rotas com base no nível de acesso (admin ou cliente)
+3. Gerencia sessões de usuário
+4. Permite atualização de perfil e alteração de senha
+
+## Sistema de Notificações
+
+O sistema de notificações permite:
+
+1. Envio de confirmações de agendamento
+2. Envio de lembretes antes do horário agendado
+3. Notificações de cancelamento
+4. Configuração de preferências de notificação por usuário
+
+## Testes
+
+O sistema inclui testes unitários abrangentes para todos os componentes principais:
+
+1. Serviço de usuários
+2. Hook de autenticação
+3. Componente de rota protegida
+4. Hook de agendamentos
+5. Hook de horários de funcionamento
+6. Hook de notificações
+7. Hook de serviços
+
+## Instalação e Execução
+
+1. Clone o repositório:
+```
+git clone https://github.com/TharkeD/Agendamento-Lovable-teste.git
+```
+
+2. Instale as dependências:
+```
+cd Agendamento-Lovable-teste
+npm install
+```
+
+3. Execute o projeto em modo de desenvolvimento:
+```
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Execute os testes:
+```
+npm test
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+5. Construa o projeto para produção:
+```
+npm run build
+```
 
-**Use GitHub Codespaces**
+## Credenciais Padrão
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **Administrador**:
+  - Email: admin@exemplo.com
+  - Senha: senha123
 
-## What technologies are used for this project?
+## Próximos Passos e Melhorias Futuras
 
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/2a198786-c0eb-4bbc-822d-cf87a475fea3) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+1. Implementação de um backend real com banco de dados
+2. Integração com serviços de email e WhatsApp reais
+3. Implementação de pagamentos online
+4. Adição de recursos de relatórios avançados
+5. Implementação de um sistema de avaliações de serviços
+6. Suporte a múltiplos idiomas
+7. Aplicativo móvel nativo
